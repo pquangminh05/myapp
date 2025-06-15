@@ -1,50 +1,34 @@
 pipeline {
     agent any
+
     tools {
-        gradle 'Gradle'
-        jdk 'JDK17'
+        gradle 'Gradle_7' // Cấu hình trong Jenkins trước (hoặc xóa nếu không có)
     }
-    environment {
-        APP_NAME = 'myapp'
-        ARTIFACT_PATH = 'build/libs/*.jar'
-    }
+
     stages {
         stage('Checkout') {
             steps {
-                git url: 'https://github.com/your-username/myapp-java.git', branch: 'main', credentialsId: 'github-credentials'
+                git 'https://github.com/pquangminh05/myapp.git'
             }
         }
+
         stage('Build') {
             steps {
-                sh 'gradle clean build -x test'
+                
+                 bat './gradlew.bat build' 
             }
         }
+
         stage('Test') {
             steps {
-                sh 'gradle test'
-            }
-        }
-        stage('Deploy') {
-            steps {
-                sh '''
-                JAR_FILE=$(ls ${ARTIFACT_PATH} | head -1)
-                pkill -f 'java -jar' || true
-                nohup java -jar ${JAR_FILE} &
-                sleep 5
-                curl -f http://localhost:8080/hello || exit 1
-                '''
+                sh './gradlew test'
             }
         }
     }
+
     post {
         always {
-            archiveArtifacts artifacts: "${ARTIFACT_PATH}", allowEmptyArchive: true
-        }
-        success {
-            echo 'CI/CD pipeline completed successfully!'
-        }
-        failure {
-            echo 'Pipeline failed!'
+            echo 'Done!'
         }
     }
 }
