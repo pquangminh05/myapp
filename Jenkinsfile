@@ -1,21 +1,18 @@
 pipeline {
     agent any
 
-    tools {
-        gradle 'Gradle_7' // Cấu hình trong Jenkins trước (hoặc xóa nếu không có)
-    }
-
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/pquangminh05/myapp.git'
+                // Lấy code từ GitHub
+                checkout scm
             }
         }
 
         stage('Build') {
             steps {
-                
-                 bat './gradlew.bat build' 
+                // Chạy build bằng wrapper có sẵn trong repo
+                sh './gradlew build'
             }
         }
 
@@ -24,11 +21,12 @@ pipeline {
                 sh './gradlew test'
             }
         }
-    }
 
-    post {
-        always {
-            echo 'Done!'
+        stage('Archive') {
+            steps {
+                // Lưu artifact nếu có file .jar hoặc build output
+                archiveArtifacts artifacts: '**/build/libs/*.jar', fingerprint: true
+            }
         }
     }
 }
