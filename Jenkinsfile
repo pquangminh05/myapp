@@ -4,27 +4,25 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                // Lấy code từ GitHub
                 checkout scm
             }
         }
 
         stage('Build') {
             steps {
-                // Chạy build bằng wrapper có sẵn trong repo
-                sh './gradlew build'
+                // Chạy bằng cmd (Windows)
+                bat 'gradlew.bat build'
             }
         }
 
         stage('Test') {
             steps {
-                sh './gradlew test'
+                bat 'gradlew.bat test'
             }
         }
 
         stage('Archive') {
             steps {
-                // Lưu artifact nếu có file .jar hoặc build output
                 archiveArtifacts artifacts: '**/build/libs/*.jar', fingerprint: true
             }
         }
