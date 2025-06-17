@@ -10,7 +10,6 @@ pipeline {
 
         stage('Build') {
             steps {
-                // Chạy bằng cmd (Windows)
                 bat 'gradlew.bat build'
             }
         }
@@ -26,5 +25,12 @@ pipeline {
                 archiveArtifacts artifacts: '**/build/libs/*.jar', fingerprint: true
             }
         }
+
+        stage('Deploy') {
+            steps {
+                bat 'java -jar build\\libs\\your-app-name-0.0.1-SNAPSHOT.jar'
+            }
+        }
     }
 }
+
