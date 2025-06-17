@@ -27,10 +27,17 @@ pipeline {
         }
 
         stage('Deploy') {
-            steps {
-                bat 'java -jar build\\libs\\your-app-name-0.0.1-SNAPSHOT.jar'
+    steps {
+        script {
+            def jarFiles = findFiles(glob: 'build/libs/*.jar')
+            if (jarFiles.length == 0) {
+                error "No JAR file found to deploy"
             }
+            def jarPath = jarFiles[0].path
+            bat "java -jar ${jarPath}"
         }
+    }
+}
     }
 }
 
